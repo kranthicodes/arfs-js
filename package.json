@@ -1,0 +1,34 @@
+{
+  "name": "arfs-js",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "ArFS for web",
+  "files": [
+    "dist",
+    "package.json"
+  ],
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "unpkg": "dist/index.global.js",
+  "jsdelivr": "dist/index.global.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsup"
+  },
+  "keywords": [],
+  "author": "Sai Kranthi Sabavath",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.6.0",
+    "tsup": "^7.2.0",
+    "typescript": "^5.2.2"
+  }
+}
