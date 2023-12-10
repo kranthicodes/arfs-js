@@ -28,8 +28,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^20.6.0",
-    "tsup": "^7.2.0",
-    "typescript": "^5.2.2",
+    "@types/uuid": "^9.0.7",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "eslint": "^8.45.0",
@@ -40,6 +39,11 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.3",
     "eslint-plugin-simple-import-sort": "^10.0.0",
-    "prettier": "^3.0.1"
+    "prettier": "^3.0.1",
+    "tsup": "^7.2.0",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "uuid": "^9.0.0"
   }
 }

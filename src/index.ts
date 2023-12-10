@@ -1,3 +1,4 @@
-export const sub = (a: number, b: number): number => {
-  return a - b
-}
+import { ArFS } from './arfs'
+
+export { ArFS }
+export * from './types'
