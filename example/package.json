@@ -1,0 +1,19 @@
+{
+  "name": "example",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "clean:output": "rimraf ./dist && rimraf ./.parcel-cache",
+    "build": "npm run clean:output && parcel build ./src/index.js --dist-dir ./dist"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "parcel": "^2.10.3",
+    "rimraf": "^5.0.5"
+  },
+  "dependencies": {
+    "arfs-js": "../dist"
+  }
+}
