@@ -3,12 +3,13 @@ import Transaction from 'arweave/web/lib/transaction'
 import { ArweaveSigner } from 'warp-arbundles'
 import { InjectedArweaveSigner } from 'warp-contracts-plugin-signature'
 
-import { _Window } from '../../mocks/windowArWallet'
+import { _Window, arweaveWallet } from '../../mocks/windowArWallet'
 import { arweaveInstance } from '../../utils/arweaveInstance'
 import { ArFSApi } from '../api'
 import { apiConfig } from '../config'
 
 globalThis.window = _Window as Window & typeof globalThis
+globalThis.arweaveWallet = arweaveWallet
 
 describe('ArFSApi with ArConnect', () => {
   const arfsApi = new ArFSApi({ wallet: 'use_wallet' })
@@ -19,6 +20,10 @@ describe('ArFSApi with ArConnect', () => {
 
   test('should have use_wallet for wallet', () => {
     expect(arfsApi.wallet).toBe('use_wallet')
+  })
+
+  test('should have user address set', async () => {
+    expect(arfsApi.address).toBe('test')
   })
 
   test('should return injected arwewave signer', async () => {
@@ -53,6 +58,12 @@ describe('ArFSApi with JWK', () => {
 
   test('should have JWK for wallet', () => {
     expect(typeof arfsApi.wallet).toBe('object')
+  })
+
+  test('should have user address set', async () => {
+    const address = await arweaveInstance.wallets.getAddress(arWallet)
+
+    expect(arfsApi.address).toBe(address)
   })
 
   test('should return arwewave signer', async () => {

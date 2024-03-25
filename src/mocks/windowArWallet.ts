@@ -3,11 +3,14 @@ import { JSDOM } from 'jsdom'
 
 const _Window = (new JSDOM() as any).window as Window
 
+const arweaveWallet = {
+  getActiveAddress: jest.fn(() => 'test'),
+  getActivePublicKey: jest.fn(() => 'test'),
+  dispatch: jest.fn((tx: Transaction) => Promise.resolve(tx.id))
+}
+
 Object.defineProperty(_Window, 'arweaveWallet', {
-  value: {
-    getActivePublicKey: jest.fn(() => 'test'),
-    dispatch: jest.fn((tx: Transaction) => Promise.resolve(tx.id))
-  }
+  value: arweaveWallet
 })
 
-export { _Window }
+export { _Window, arweaveWallet }

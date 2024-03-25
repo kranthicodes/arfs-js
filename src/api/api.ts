@@ -11,10 +11,13 @@ import { apiConfig } from './config'
 export class ArFSApi {
   public apiUrl: string
   public wallet: Wallet
+  public address: string | null = null
   public argql = arGql()
   constructor({ gateway, wallet }: APIOptions) {
     this.apiUrl = gateway ? gateway : apiConfig['default'].url
     this.wallet = wallet
+
+    this.#setUserAddress(wallet)
   }
 
   async getSigner() {
@@ -65,5 +68,14 @@ export class ArFSApi {
     return { successTxIds: txIds, failedTxIndex }
   }
 
-  
+  async #setUserAddress(wallet: Wallet) {
+    try {
+      const address = await arweaveInstance.wallets.getAddress(wallet)
+
+      this.address = address
+    } catch (error) {
+      console.log({ error })
+      throw new Error('Failed to set user address. Check JWK or Arconnect permissions.')
+    }
+  }
 }
