@@ -20,5 +20,7 @@ export interface BaseModelProps {
   contentType: string
   driveId: string
   unixTime: UnixTime
-  entityType?: 'drive' | 'folder' | 'file' | 'snapshot'
+  entityType?: EntityType
 }
+
+export type EntityType = 'drive' | 'folder' | 'file' | 'snapshot'

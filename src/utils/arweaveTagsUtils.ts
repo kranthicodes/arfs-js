@@ -1,10 +1,9 @@
 import { Tag } from 'arweave/web/lib/transaction'
 
 import { TAG_NAMES_TO_KEYS } from '../constants'
-import { Drive, Folder } from '../models'
-import { BaseModelProps } from '../models/Base.model'
+import { Drive, File, Folder } from '../models'
 
-export function toArweaveTags(model: Drive | Folder): { name: string; value: string }[] {
+export function toArweaveTags(model: Drive | Folder | File): { name: string; value: string }[] {
   const tags: { name: string; value: string }[] = [
     { name: 'ArFS', value: model.arFS },
     { name: 'Content-Type', value: model.contentType },
@@ -23,12 +22,16 @@ export function toArweaveTags(model: Drive | Folder): { name: string; value: str
     if (model.parentFolderId) {
       tags.push({ name: 'Parent-Folder-Id', value: model.parentFolderId })
     }
+  } else if (model instanceof File) {
+    // Handle File model
+    tags.push({ name: 'File-Id', value: model.fileId })
+    tags.push({ name: 'Parent-Folder-Id', value: model.parentFolderId })
   }
 
   return tags
 }
 
-export function toModelObject<T>(tags: Tag[]): BaseModelProps & T {
+export function toModelObject<T>(tags: Tag[]): T {
   const result: Record<string, unknown> = {}
 
   tags.forEach((tag) => {
@@ -37,5 +40,5 @@ export function toModelObject<T>(tags: Tag[]): BaseModelProps & T {
     result[key] = tag.value
   })
 
-  return result as BaseModelProps & T
+  return result as T
 }

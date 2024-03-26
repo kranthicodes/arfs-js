@@ -1,7 +1,7 @@
 import { Tag } from 'arweave/web/lib/transaction'
 
 import { ArFSApi } from '../api'
-import { Drive, DriveMetaData, Folder } from '../models'
+import { Drive, DriveMetaData, DriveOptions, Folder } from '../models'
 import { toModelObject } from '../utils/arweaveTagsUtils'
 
 export class DriveService {
@@ -58,7 +58,7 @@ export class DriveService {
       const txRes = await fetch(`https://arweave.net/${txId}`)
       const data = (await txRes.json()) as DriveMetaData
 
-      const modelObject = toModelObject(tags)
+      const modelObject = toModelObject<DriveOptions>(tags)
 
       return new Drive({ ...modelObject, name: data.name, rootFolderId: data.rootFolderId })
     } catch (error) {

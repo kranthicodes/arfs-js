@@ -19,6 +19,10 @@ export interface CreateFolderProps {
   parentFolderId?: string
 }
 
+export type FolderMetaData = {
+  name: string // User defined folder name
+}
+
 export class Folder extends BaseModel {
   arFS: string
   contentType: string

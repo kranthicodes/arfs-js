@@ -23,7 +23,7 @@ describe('ArFSApi with ArConnect', () => {
   })
 
   test('should have user address set', async () => {
-    expect(arfsApi.address).toBe('test')
+    expect(arfsApi.address).toBe('owtC4zvNF_S2C42-Rb-PC1vuuF6bzcqIUlmQvd-Bo50')
   })
 
   test('should return injected arwewave signer', async () => {
