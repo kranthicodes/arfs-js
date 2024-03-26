@@ -1,4 +1,3 @@
-import { arGql } from 'ar-gql'
 import Transaction from 'arweave/web/lib/transaction'
 import { ArweaveSigner, DataItem } from 'warp-arbundles'
 import { InjectedArweaveSigner } from 'warp-contracts-plugin-signature'
@@ -7,17 +6,22 @@ import { APIOptions, Wallet } from '../types/api'
 import { arweaveInstance } from '../utils/arweaveInstance'
 import { arConnectUpload, arweaveUpload, turboUpload } from '../utils/uploaders'
 import { apiConfig } from './config'
+import { QueryBuilder } from './query/queryBuilder'
 
 export class ArFSApi {
   public apiUrl: string
   public wallet: Wallet
   public address: string | null = null
-  public argql = arGql()
+  public queryEngine: QueryBuilder | null = null
+  public isReady: boolean = false
+
   constructor({ gateway, wallet }: APIOptions) {
-    this.apiUrl = gateway ? gateway : apiConfig['default'].url
+    const apiUrl = gateway ? gateway : apiConfig['default'].url
+
+    this.apiUrl = apiUrl
     this.wallet = wallet
 
-    this.#setUserAddress(wallet)
+    this.#initialize(wallet, apiUrl)
   }
 
   async getSigner() {
@@ -68,11 +72,14 @@ export class ArFSApi {
     return { successTxIds: txIds, failedTxIndex }
   }
 
-  async #setUserAddress(wallet: Wallet) {
+  async #initialize(wallet: Wallet, apiUrl: string) {
     try {
       const address = await arweaveInstance.wallets.getAddress(wallet)
+      const queryInstance = new QueryBuilder({ apiUrl, address })
 
       this.address = address
+      this.queryEngine = queryInstance
+      this.isReady = true
     } catch (error) {
       console.log({ error })
       throw new Error('Failed to set user address. Check JWK or Arconnect permissions.')

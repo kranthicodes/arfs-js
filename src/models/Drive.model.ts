@@ -3,19 +3,19 @@ import { v4 as uuidv4 } from 'uuid'
 import { createData } from 'warp-arbundles'
 
 import { arweaveInstance } from '../utils/arweaveInstance'
-import { toArweaveTags } from '../utils/toArweaveTags'
+import { toArweaveTags } from '../utils/arweaveTagsUtils'
 import { getUnixTime, UnixTime } from '../utils/UnixTime'
-import { BaseModel } from './Base.model'
+import { BaseModel, BaseModelProps } from './Base.model'
 
-export interface DriveOptions {
-  arFS: string
-  contentType: string
-  driveId: string
+export interface DriveOptions extends BaseModelProps {
   drivePrivacy?: 'public'
-  entityType?: 'drive'
-  unixTime: UnixTime
   name: string // User defined drive name
   rootFolderId?: string // UUID of the drive root folder
+}
+
+export type DriveMetaData = {
+  name: string // User defined drive name
+  rootFolderId: string // UUID of the drive root folder
 }
 
 export class Drive extends BaseModel {

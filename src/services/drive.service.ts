@@ -1,5 +1,8 @@
+import { Tag } from 'arweave/web/lib/transaction'
+
 import { ArFSApi } from '../api'
-import { Drive, Folder } from '../models'
+import { Drive, DriveMetaData, Folder } from '../models'
+import { toModelObject } from '../utils/arweaveTagsUtils'
 
 export class DriveService {
   api: ArFSApi
@@ -7,9 +10,9 @@ export class DriveService {
     this.api = api
   }
 
-  async create() {
-    const drive = Drive.create('testDrive')
-    const rootFolder = Folder.create({ name: 'testFolder', driveId: drive.driveId })
+  async create(name: string) {
+    const drive = Drive.create(name)
+    const rootFolder = Folder.create({ name, driveId: drive.driveId })
     drive.rootFolderId = rootFolder.folderId
 
     const signer = await this.api.getSigner()
@@ -26,7 +29,40 @@ export class DriveService {
     return drive
   }
 
-  async listAll(){
-    
+  async listAll() {
+    if (!this.api.isReady || !this.api.queryEngine) {
+      return
+    }
+
+    let response: Drive[] = []
+
+    try {
+      const drivesGql = await this.api.queryEngine.query('GET_ALL_USER_DRIVES')
+
+      for (const driveGql of drivesGql) {
+        const driveInstance = await this.#transactionToDriveInstance(driveGql.node.id, driveGql.node.tags as Tag[])
+
+        response.push(driveInstance)
+      }
+    } catch (error) {
+      throw new Error('Failed to get user drives.')
+    }
+
+    response = response.filter((v, i, a) => a.findIndex((v2) => v2.driveId === v.driveId) === i)
+
+    return response
+  }
+
+  async #transactionToDriveInstance(txId: string, tags: Tag[]): Promise<Drive> {
+    try {
+      const txRes = await fetch(`https://arweave.net/${txId}`)
+      const data = (await txRes.json()) as DriveMetaData
+
+      const modelObject = toModelObject(tags)
+
+      return new Drive({ ...modelObject, name: data.name, rootFolderId: data.rootFolderId })
+    } catch (error) {
+      throw new Error('Failed to prepare drive instance.')
+    }
   }
 }

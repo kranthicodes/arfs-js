@@ -1,0 +1,10 @@
+export const TAG_NAMES_TO_KEYS = {
+  ArFS: 'arFS',
+  'Content-Type': 'contentType',
+  'Drive-Id': 'driveId',
+  'Entity-Type': 'entityType',
+  'Unix-Time': 'unixTime',
+  'Drive-Privacy': 'drivePrivacy',
+  'Folder-Id': 'folderId',
+  'Parent-Folder-Id': 'parentFolderId'
+}

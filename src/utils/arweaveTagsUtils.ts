@@ -1,4 +1,8 @@
+import { Tag } from 'arweave/web/lib/transaction'
+
+import { TAG_NAMES_TO_KEYS } from '../constants'
 import { Drive, Folder } from '../models'
+import { BaseModelProps } from '../models/Base.model'
 
 export function toArweaveTags(model: Drive | Folder): { name: string; value: string }[] {
   const tags: { name: string; value: string }[] = [
@@ -22,4 +26,16 @@ export function toArweaveTags(model: Drive | Folder): { name: string; value: str
   }
 
   return tags
+}
+
+export function toModelObject<T>(tags: Tag[]): BaseModelProps & T {
+  const result: Record<string, unknown> = {}
+
+  tags.forEach((tag) => {
+    const key = TAG_NAMES_TO_KEYS[tag.name as keyof typeof TAG_NAMES_TO_KEYS]
+
+    result[key] = tag.value
+  })
+
+  return result as BaseModelProps & T
 }

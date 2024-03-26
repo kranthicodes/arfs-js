@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { createData } from 'warp-arbundles'
 
 import { arweaveInstance } from '../utils/arweaveInstance'
-import { toArweaveTags } from '../utils/toArweaveTags'
+import { toArweaveTags } from '../utils/arweaveTagsUtils'
 import { getUnixTime } from '../utils/UnixTime'
 import { BaseModel, BaseModelProps } from './Base.model'
 
