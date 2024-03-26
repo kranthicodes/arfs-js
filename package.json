@@ -4,18 +4,17 @@
   "type": "module",
   "description": "ArFS for web",
   "files": [
-    "dist",
-    "package.json"
+    "dist/"
   ],
   "exports": {
     ".": {
       "require": "./dist/index.js",
-      "import": "./dist/index.mjs",
+      "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     }
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
   "unpkg": "dist/index.global.js",
   "jsdelivr": "dist/index.global.js",
   "types": "./dist/index.d.ts",
