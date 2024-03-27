@@ -6,7 +6,7 @@ query($cursor: String $address: String! $driveId: String! $folderId: String!) {
       tags: [
         { name: "Drive-Id", values: [$driveId] }
         { name: "Parent-Folder-Id", values: [$folderId] }
-        { name: "Entity-Type", values: ["folder"] }
+        { name: "Entity-Type", values: ["folder", "file"] }
       ]
       owners: [$address]
     ) {

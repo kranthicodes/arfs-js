@@ -4,6 +4,7 @@ import { ArFSApi } from '../api'
 import { File, FileMetaData, Folder, FolderMetaData, IFileProps, IFolderProps } from '../models'
 import { toModelObject } from '../utils/arweaveTagsUtils'
 import { getEntityTypeFromTags } from '../utils/getEntityTypeFromTags'
+import { getUniqueEntities } from '../utils/getUniqueEntities'
 
 export class FolderService {
   api: ArFSApi
@@ -48,7 +49,7 @@ export class FolderService {
       throw new Error('Failed to get user drives.')
     }
 
-    response = response.filter((v, i, a) => a.findIndex((v2) => v2.driveId === v.driveId) === i)
+    response = getUniqueEntities(response)
 
     return response
   }

@@ -6,5 +6,6 @@ export const TAG_NAMES_TO_KEYS = {
   'Unix-Time': 'unixTime',
   'Drive-Privacy': 'drivePrivacy',
   'Folder-Id': 'folderId',
+  'File-Id': 'fileId',
   'Parent-Folder-Id': 'parentFolderId'
 }

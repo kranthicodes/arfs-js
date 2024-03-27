@@ -1,10 +1,14 @@
 import { motion } from 'framer-motion'
 import useWallet from '../lib/wallet-provider/useWallet'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { FaUserCircle } from 'react-icons/fa'
 
 export const FloatingNav = () => {
-  const { connected } = useWallet()
+  const { connected, reConnect } = useWallet()
+
+  React.useEffect(() => {
+    reConnect()
+  }, [])
 
   return (
     <nav className="flex w-fit items-center gap-6 rounded-lg border-[1px] border-neutral-700 bg-slate-950 py-2 px-6 text-sm text-neutral-400">

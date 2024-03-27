@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
-import { SiFramer, SiTailwindcss, SiReact, SiJavascript, SiCss3 } from 'react-icons/si'
+import { SiGoogledrive } from 'react-icons/si'
 
 const SideNav = () => {
   const [selected, setSelected] = useState(0)
@@ -17,19 +17,7 @@ const SideNav = () => {
         ></path>
       </svg>
       <NavItem selected={selected === 0} id={0} setSelected={setSelected}>
-        <SiTailwindcss />
-      </NavItem>
-      <NavItem selected={selected === 1} id={1} setSelected={setSelected}>
-        <SiReact />
-      </NavItem>
-      <NavItem selected={selected === 2} id={2} setSelected={setSelected}>
-        <SiJavascript />
-      </NavItem>
-      <NavItem selected={selected === 3} id={3} setSelected={setSelected}>
-        <SiFramer />
-      </NavItem>
-      <NavItem selected={selected === 4} id={4} setSelected={setSelected}>
-        <SiCss3 />
+        <SiGoogledrive />
       </NavItem>
     </nav>
   )
