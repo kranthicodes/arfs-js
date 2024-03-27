@@ -30,8 +30,10 @@ export class DriveService {
   }
 
   async listAll() {
-    if (!this.api.isReady || !this.api.queryEngine) {
-      return
+    await this.api.ready
+
+    if (!this.api.ready || !this.api.queryEngine) {
+      return null
     }
 
     let response: Drive[] = []

@@ -29,8 +29,10 @@ export class FolderService {
   }
 
   async listAll(folderId: string, driveId: string) {
-    if (!this.api.isReady || !this.api.queryEngine) {
-      return
+    await this.api.ready
+
+    if (!this.api.ready || !this.api.queryEngine) {
+      return null
     }
 
     let response: (File | Folder)[] = []
@@ -46,10 +48,39 @@ export class FolderService {
         response.push(entityInstance)
       }
     } catch (error) {
-      throw new Error('Failed to get user drives.')
+      throw new Error('Failed to get user folders and files.')
     }
 
     response = getUniqueEntities(response)
+
+    return response
+  }
+
+  async get(folderId: string, driveId: string) {
+    await this.api.ready
+
+    if (!this.api.ready || !this.api.queryEngine) {
+      return null
+    }
+
+    let response: Folder | null = null
+
+    try {
+      const entitiesGql = await this.api.queryEngine.query('GET_FOLDER_BY_ID', { folderId, driveId })
+
+      if (!entitiesGql.length) {
+        return null
+      }
+
+      const folderInstance = await this.#transactionToEntityInstance(
+        entitiesGql[0].node.id,
+        entitiesGql[0].node.tags as Tag[]
+      ) // most recent folder update
+
+      response = folderInstance as Folder
+    } catch (error) {
+      throw new Error('Failed to get folder.')
+    }
 
     return response
   }

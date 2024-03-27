@@ -2,26 +2,31 @@ import { motion } from 'framer-motion'
 import useWallet from '../lib/wallet-provider/useWallet'
 import React, { useState } from 'react'
 import { FaUserCircle } from 'react-icons/fa'
+import { shortenAddress } from '../utils/shortenAddr'
 
-export const FloatingNav = () => {
-  const { connected, reConnect } = useWallet()
+export const Navbar = () => {
+  const { connected, reConnect, activeAddress } = useWallet()
 
   React.useEffect(() => {
     reConnect()
   }, [])
 
   return (
-    <nav className="flex w-fit items-center gap-6 rounded-lg border-[1px] border-neutral-700 bg-slate-950 py-2 px-6 text-sm text-neutral-400">
-      <NavLink>Refresh</NavLink>
-      <NavLink>Deep-Refresh</NavLink>
-
-      {!connected && <ConnectButton />}
-      {connected && <UserButton />}
+    <nav className="w-full h-fit bg-slate-950 p-4 flex justify-end gap-2">
+      <div className="pr-6 flex gap-6 items-center">
+        {!connected && <ConnectButton />}
+        {connected && (
+          <div className="flex items-center gap-2">
+            <UserButton />
+            <h1>{shortenAddress(activeAddress)}</h1>
+          </div>
+        )}
+      </div>
     </nav>
   )
 }
 
-const NavLink = ({ children }) => {
+export const NavLink = ({ children }) => {
   return (
     <a href="#" rel="nofollow" className="block overflow-hidden">
       <motion.div whileHover={{ y: -20 }} transition={{ ease: 'backInOut', duration: 0.5 }} className="h-[20px]">

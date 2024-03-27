@@ -4,15 +4,13 @@ const initialAuthState = {
   method: null
 }
 
-const createAuthSlice = (set, get) => ({
+const createAuthSlice = (set) => ({
   authState: initialAuthState,
   authActions: {
     login: async (value) => {
       set((state) => {
         state.authState = value
       })
-
-      await get().userActions.setUserDetails()
     },
     logout: () =>
       set((state) => {

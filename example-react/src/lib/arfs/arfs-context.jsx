@@ -1,10 +1,10 @@
 import * as React from 'react'
-import { ArFS } from 'arfs-js'
+import { getArFSClient } from '../../utils/getArFSClient'
 
 const ArFSContext = React.createContext()
 
 export function ArFSProvider({ children }) {
-  const arfsClient = new ArFS({ wallet: 'use_wallet' })
+  const arfsClient = getArFSClient()
 
   return <ArFSContext.Provider value={{ arfsClient }}>{children}</ArFSContext.Provider>
 }

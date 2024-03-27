@@ -13,7 +13,7 @@ export class ArFSApi {
   public wallet: Wallet
   public address: string | null = null
   public queryEngine: QueryBuilder | null = null
-  public isReady: boolean = false
+  public ready: Promise<boolean>
 
   constructor({ gateway, wallet }: APIOptions) {
     const apiUrl = gateway ? gateway : apiConfig['default'].url
@@ -21,7 +21,7 @@ export class ArFSApi {
     this.apiUrl = apiUrl
     this.wallet = wallet
 
-    this.#initialize(wallet, apiUrl)
+    this.ready = this.#initialize(wallet, apiUrl)
   }
 
   async getSigner() {
@@ -79,10 +79,12 @@ export class ArFSApi {
 
       this.address = address
       this.queryEngine = queryInstance
-      this.isReady = true
+
+      return true
     } catch (error) {
       console.log({ error })
-      throw new Error('Failed to set user address. Check JWK or Arconnect permissions.')
     }
+
+    return false
   }
 }

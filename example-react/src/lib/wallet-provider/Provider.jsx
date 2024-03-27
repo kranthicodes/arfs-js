@@ -44,7 +44,7 @@ export default function WalletProvider({ children }) {
       setActiveAddress(address)
       setConnected(true)
 
-      useGlobalStore.getState().authState.login({ isLoggedIn: true, address, method: 'arconnect' })
+      useGlobalStore.getState().authActions.login({ isLoggedIn: true, address, method: 'arconnect' })
 
       setStatus('connected')
     } catch (error) {
@@ -63,7 +63,7 @@ export default function WalletProvider({ children }) {
       setConnected(true)
       setStatus('connected')
 
-      useGlobalStore.getState().authState.login({ isLoggedIn: true, address, method: 'arconnect' })
+      useGlobalStore.getState().authActions.login({ isLoggedIn: true, address, method: 'arconnect' })
 
       return true
     }
@@ -76,7 +76,7 @@ export default function WalletProvider({ children }) {
 
     await window.arweaveWallet.disconnect()
 
-    useGlobalStore.getState().authState.logout()
+    useGlobalStore.getState().authActions.logout()
 
     setActiveAddress('')
     setConnected(false)
