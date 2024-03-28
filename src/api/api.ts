@@ -4,7 +4,7 @@ import { InjectedArweaveSigner } from 'warp-contracts-plugin-signature'
 
 import { APIOptions, Wallet } from '../types/api'
 import { arweaveInstance } from '../utils/arweaveInstance'
-import { arConnectUpload, arweaveUpload, turboUpload } from '../utils/uploaders'
+import {  arweaveUpload, turboUpload } from '../utils/uploaders'
 import { apiConfig } from './config'
 import { QueryBuilder } from './query/queryBuilder'
 
@@ -47,7 +47,9 @@ export class ArFSApi {
 
       try {
         if (this.wallet === 'use_wallet') {
-          const txId = await arConnectUpload(tx)
+          await arweaveInstance.transactions.sign(tx as Transaction, this.wallet)
+
+          const txId = await arweaveUpload(tx as Transaction)
           txIds.push(txId)
 
           continue

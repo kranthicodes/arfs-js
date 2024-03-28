@@ -2,14 +2,21 @@ import { FiEdit, FiChevronDown, FiPlusSquare } from 'react-icons/fi'
 import { motion } from 'framer-motion'
 import { useState } from 'react'
 import NewDriveModal from './NewDriveModal'
+import NewFolderModal from './NewFolderModal'
 
 const ArFSActionsDropDown = () => {
   const [openDropDown, setOpenDropDown] = useState(false)
   const [openDriveModal, setOpenDriveModal] = useState(false)
+  const [openFolderModal, setOpenFolderModal] = useState(false)
 
   function handleDriveModalOpen() {
     setOpenDropDown(false)
     setOpenDriveModal(true)
+  }
+
+  function handleFolderModalOpen() {
+    setOpenDropDown(false)
+    setOpenFolderModal(true)
   }
 
   return (
@@ -31,10 +38,11 @@ const ArFSActionsDropDown = () => {
         className="flex flex-col gap-2 p-2 rounded-lg bg-white shadow-xl absolute top-[120%] left-[25%] w-48 overflow-hidden"
       >
         <Option setOpen={handleDriveModalOpen} Icon={FiPlusSquare} text="New Drive" />
-        <Option setOpen={setOpenDropDown} Icon={FiPlusSquare} text="New Folder" />
+        <Option setOpen={handleFolderModalOpen} Icon={FiPlusSquare} text="New Folder" />
         <Option setOpen={setOpenDropDown} Icon={FiEdit} text="New File" />
       </motion.ul>
       <NewDriveModal isOpen={openDriveModal} setIsOpen={setOpenDriveModal} />
+      <NewFolderModal isOpen={openFolderModal} setIsOpen={setOpenFolderModal} />
     </motion.div>
   )
 }

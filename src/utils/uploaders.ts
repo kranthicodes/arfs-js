@@ -1,4 +1,4 @@
-import Transaction, { Tag } from 'arweave/web/lib/transaction'
+import Transaction from 'arweave/web/lib/transaction'
 import { DataItem } from 'warp-arbundles'
 
 import { arweaveInstance } from './arweaveInstance'
@@ -41,7 +41,11 @@ export async function arConnectUpload(transaction: DataItem | Transaction) {
   let tx = transaction
 
   if (tx instanceof DataItem) {
-    tx = await arweaveInstance.createTransaction({ data: tx.rawData, tags: tx.tags as Tag[] })
+    const data = tx.rawData.toString()
+
+    tx = await arweaveInstance.createTransaction({ data })
+
+    for (const tag of tx.tags) tx.addTag(tag.name, tag.value)
   }
 
   const dataTxResponse = await window.arweaveWallet.dispatch(tx)

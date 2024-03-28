@@ -1,4 +1,5 @@
 import { getArFSClient } from '../../utils/getArFSClient'
+import { waitFor } from '../../utils/waitFor'
 
 const initialExplorerState = {
   drives: [],
@@ -30,7 +31,6 @@ const createExplorerSlice = (set, get) => ({
       const arfsClient = getArFSClient()
 
       try {
-        console.log(arfsClient.api.ready)
         const drives = await arfsClient.drive.listAll()
 
         set((state) => {
@@ -75,6 +75,61 @@ const createExplorerSlice = (set, get) => ({
       set((state) => {
         state.explorerState.isSyncing = false
       })
+    },
+    createDrive: async (name) => {
+      const userAddress = get().authState.address
+
+      if (!userAddress) {
+        // TODO: use toast maybe?
+        return
+      }
+
+      const arfsClient = getArFSClient()
+
+      try {
+        const drive = await arfsClient.drive.create(name)
+
+        set((state) => {
+          state.explorerState.drives.push(drive)
+        })
+      } catch (error) {
+        console.log({ error })
+        // TODO: use toast maybe?
+      }
+
+      await waitFor(500)
+    },
+    createFolder: async (name) => {
+      const userAddress = get().authState.address
+      const { selectedDrive, selectedFolder } = get().explorerState
+
+      if (!userAddress) {
+        // TODO: use toast maybe?
+        return
+      }
+
+      if (!selectedDrive || !selectedFolder) {
+        // TODO: use toast maybe?
+        return
+      }
+
+      const arfsClient = getArFSClient()
+
+      try {
+        const folder = await arfsClient.folder.create(name, {
+          driveId: selectedDrive.driveId,
+          parentFolderId: selectedFolder.folderId
+        })
+
+        set((state) => {
+          state.explorerState.folderEntities.push(folder)
+        })
+      } catch (error) {
+        console.log({ error })
+        // TODO: use toast maybe?
+      }
+
+      await waitFor(500)
     },
     addToPathEntities: (entity) => {
       set((state) => {

@@ -11,6 +11,32 @@ import { apiConfig } from '../config'
 globalThis.window = _Window as Window & typeof globalThis
 globalThis.arweaveWallet = arweaveWallet
 
+jest.mock('../../utils/arweaveInstance', () => {
+  const originalModule = jest.requireActual('../../utils/arweaveInstance')
+
+  originalModule.arweaveInstance.transactions.sign = jest.fn((tx, _) => tx)
+  originalModule.arweaveInstance.transactions.post = jest.fn((_) => ({ status: 200, statusText: 'mocked ar tx post' }))
+
+  return originalModule
+  // Mock any module exports here
+  // return {
+  //   __esModule: true,
+  //   ...originalModule,
+  //   // default: jest.fn(() => 'mocked default export example'),
+  //   // Named export mocks
+  //   arweaveInstance: {
+  //     ...originalModule.arweaveInstance,
+  //     transactions: {
+  //       ...originalModule.arweaveInstance.transactions,
+  //       sign: jest.fn((tx, _) => tx),
+  //       post: jest.fn((_) => ({ status: 200, statusText: 'mocked ar tx post' }))
+
+  //     },
+  //     createTransaction: originalModule.arweaveInstance.createTransaction
+  //   }
+  // }
+})
+
 describe('ArFSApi with ArConnect', () => {
   const arfsApi = new ArFSApi({ wallet: 'use_wallet' })
 
@@ -41,8 +67,11 @@ describe('ArFSApi with ArConnect', () => {
     expect(response.successTxIds.length).toBe(1)
     expect(response.failedTxIndex.length).toBe(0)
 
-    expect(window.arweaveWallet.dispatch).toHaveBeenCalledTimes(1)
-    expect(window.arweaveWallet.dispatch).toHaveBeenCalledWith(arTx)
+    expect(arweaveInstance.transactions.sign).toHaveBeenCalledTimes(1)
+    expect(arweaveInstance.transactions.sign).toHaveBeenLastCalledWith(arTx, 'use_wallet')
+
+    expect(arweaveInstance.transactions.post).toHaveBeenCalledTimes(1)
+    expect(arweaveInstance.transactions.post).toHaveBeenCalledWith(arTx)
   })
 })
 

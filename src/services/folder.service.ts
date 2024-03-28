@@ -15,14 +15,12 @@ export class FolderService {
   async create(name: string, { parentFolderId, driveId }: CreateFolderOptions) {
     const folder = Folder.create({ name, driveId: driveId, parentFolderId })
 
-    const signer = await this.api.getSigner()
-
-    const folderDataItem = await folder.toDataItem(signer)
+    const folderDataItem = await folder.toTransaction()
 
     const response = await this.api.signAndSendAllTransactions([folderDataItem])
 
     if (response.failedTxIndex.length !== 0) {
-      throw new Error('Failed to create a new drive.')
+      throw new Error('Failed to create a new folder.')
     }
 
     return folder

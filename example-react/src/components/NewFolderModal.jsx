@@ -1,19 +1,19 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import React from 'react'
-import { FiHardDrive } from 'react-icons/fi'
+import { FiFolder } from 'react-icons/fi'
 import { useGlobalStore } from '../store/globalStore'
 import BarLoader from './BarLoader'
 
-const NewDriveModal = ({ isOpen, setIsOpen }) => {
+const NewFolderModal = ({ isOpen, setIsOpen }) => {
   const [isSubmitting, setIsSubmitting] = React.useState(false)
   const [name, setName] = React.useState('')
-  const [createDrive] = useGlobalStore((state) => [state.explorerActions.createDrive])
+  const [createFolder] = useGlobalStore((state) => [state.explorerActions.createFolder])
 
   async function handleSubmit() {
     if (!name) return
 
     setIsSubmitting(true)
-    await createDrive(name)
+    await createFolder(name)
     setIsSubmitting(false)
 
     setIsOpen(false)
@@ -36,18 +36,18 @@ const NewDriveModal = ({ isOpen, setIsOpen }) => {
             onClick={(e) => e.stopPropagation()}
             className="bg-gradient-to-br from-violet-600 to-indigo-600 text-white p-6 rounded-lg w-full max-w-lg shadow-xl cursor-default relative overflow-hidden"
           >
-            <FiHardDrive className="text-white/10 rotate-12 text-[250px] absolute z-0 -top-24 -left-24" />
+            <FiFolder className="text-white/10 rotate-12 text-[250px] absolute z-0 -top-24 -left-24" />
             <div className="relative z-10">
               <div className="bg-white w-16 h-16 mb-2 rounded-full text-3xl text-indigo-600 grid place-items-center mx-auto">
-                <FiHardDrive />
+                <FiFolder />
               </div>
-              <h3 className="text-3xl font-bold text-center mb-2">Create a New Drive</h3>
+              <h3 className="text-3xl font-bold text-center mb-2">Create a New Folder</h3>
               <div className="flex py-4">
                 <input
                   value={name}
                   onChange={(evt) => setName(evt.target.value)}
                   type="text"
-                  placeholder="Your drive name..."
+                  placeholder="Your folder name..."
                   className={`bg-indigo-700 transition-colors duration-[750ms] placeholder-white/70 p-2 rounded-md w-full focus:outline-0`}
                 />
               </div>
@@ -75,4 +75,4 @@ const NewDriveModal = ({ isOpen, setIsOpen }) => {
   )
 }
 
-export default NewDriveModal
+export default NewFolderModal

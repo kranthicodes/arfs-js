@@ -15,10 +15,8 @@ export class DriveService {
     const rootFolder = Folder.create({ name, driveId: drive.driveId })
     drive.rootFolderId = rootFolder.folderId
 
-    const signer = await this.api.getSigner()
-
-    const driveDataItem = await drive.toDataItem(signer)
-    const rootFolderDataItem = await rootFolder.toDataItem(signer)
+    const driveDataItem = await drive.toTransaction()
+    const rootFolderDataItem = await rootFolder.toTransaction()
 
     const response = await this.api.signAndSendAllTransactions([driveDataItem, rootFolderDataItem])
 
