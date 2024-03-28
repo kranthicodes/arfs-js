@@ -25,13 +25,13 @@ export class FileService {
         await this.api.signAndSendAllTransactions([dataTx])
 
       if (failedDataTxIndex.length !== 0) {
-        throw new Error('Failed to create a new folder.')
+        throw new Error('Failed to create file data tx.')
       }
 
       const [txid] = successDataTxIds
 
       if (!txid) {
-        throw new Error('Failed to create a new folder.')
+        throw new Error('Failed to create a new file.')
       }
 
       dataTxId = txid
@@ -49,7 +49,7 @@ export class FileService {
     const response = await this.api.signAndSendAllTransactions([fileTransaction])
 
     if (response.failedTxIndex.length !== 0) {
-      throw new Error('Failed to create a new folder.')
+      throw new Error('Failed to create a new file.')
     }
 
     return fileInstance

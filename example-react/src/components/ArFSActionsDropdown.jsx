@@ -3,11 +3,13 @@ import { motion } from 'framer-motion'
 import { useState } from 'react'
 import NewDriveModal from './NewDriveModal'
 import NewFolderModal from './NewFolderModal'
+import NewFileModal from './NewFileModal'
 
 const ArFSActionsDropDown = () => {
   const [openDropDown, setOpenDropDown] = useState(false)
   const [openDriveModal, setOpenDriveModal] = useState(false)
   const [openFolderModal, setOpenFolderModal] = useState(false)
+  const [openFileModal, setOpenFileModal] = useState(false)
 
   function handleDriveModalOpen() {
     setOpenDropDown(false)
@@ -17,6 +19,11 @@ const ArFSActionsDropDown = () => {
   function handleFolderModalOpen() {
     setOpenDropDown(false)
     setOpenFolderModal(true)
+  }
+
+  function handleFileModalOpen() {
+    setOpenDropDown(false)
+    setOpenFileModal(true)
   }
 
   return (
@@ -39,10 +46,11 @@ const ArFSActionsDropDown = () => {
       >
         <Option setOpen={handleDriveModalOpen} Icon={FiPlusSquare} text="New Drive" />
         <Option setOpen={handleFolderModalOpen} Icon={FiPlusSquare} text="New Folder" />
-        <Option setOpen={setOpenDropDown} Icon={FiEdit} text="New File" />
+        <Option setOpen={handleFileModalOpen} Icon={FiEdit} text="New File" />
       </motion.ul>
       <NewDriveModal isOpen={openDriveModal} setIsOpen={setOpenDriveModal} />
       <NewFolderModal isOpen={openFolderModal} setIsOpen={setOpenFolderModal} />
+      <NewFileModal isOpen={openFileModal} setIsOpen={setOpenFileModal} />
     </motion.div>
   )
 }

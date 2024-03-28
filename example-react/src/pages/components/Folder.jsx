@@ -13,7 +13,7 @@ export default function Folder({ instance, handleFolderClick }) {
       <div className="hover:text-inherit text-inherit">
         <FaFolder className="w-8 h-8 hover:text-inherit text-inherit" />
       </div>
-      <div className="hover:text-inherit text-inherit">
+      <div className="hover:text-inherit text-inherit text-center">
         <h3 className="text-md tracking-wide leading-6">{instance?.name || 'unknown'}</h3>
       </div>
     </motion.div>

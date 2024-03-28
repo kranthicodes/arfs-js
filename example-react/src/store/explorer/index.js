@@ -131,6 +131,43 @@ const createExplorerSlice = (set, get) => ({
 
       await waitFor(500)
     },
+    createFile: async (file) => {
+      const userAddress = get().authState.address
+      const { selectedDrive, selectedFolder } = get().explorerState
+
+      if (!userAddress) {
+        // TODO: use toast maybe?
+        return
+      }
+
+      if (!selectedDrive || !selectedFolder) {
+        // TODO: use toast maybe?
+        return
+      }
+
+      const arfsClient = getArFSClient()
+      const fileBuffer = await file.arrayBuffer()
+
+      try {
+        const fileEntity = await arfsClient.file.create({
+          name: file.name,
+          size: file.size,
+          dataContentType: file.type,
+          driveId: selectedDrive.driveId,
+          parentFolderId: selectedFolder.folderId,
+          file: fileBuffer
+        })
+
+        set((state) => {
+          state.explorerState.folderEntities.push(fileEntity)
+        })
+      } catch (error) {
+        console.log({ error })
+        // TODO: use toast maybe?
+      }
+
+      await waitFor(500)
+    },
     addToPathEntities: (entity) => {
       set((state) => {
         state.explorerState.pathEntities.push(entity)

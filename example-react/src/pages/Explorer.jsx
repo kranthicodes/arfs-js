@@ -83,7 +83,7 @@ export default function ExplorerPage() {
       </div>
 
       {!selectedFolder && (
-        <div className="p-4 min-h-[400px] gap-6 flex flex-wrap justify-start items-start mx-4 rounded border-2 border-dashed border-slate-600 bg-slate-800">
+        <div className="p-4 min-h-[400px] auto-rows-min grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] mx-4 rounded border-2 border-dashed border-slate-600 bg-slate-800">
           {drives.map((drive, idx) => (
             <Drive handleDriveClick={handleDriveClick} key={idx} instance={drive} />
           ))}
