@@ -18,26 +18,14 @@ jest.mock('../../utils/arweaveInstance', () => {
   originalModule.arweaveInstance.transactions.post = jest.fn((_) => ({ status: 200, statusText: 'mocked ar tx post' }))
 
   return originalModule
-  // Mock any module exports here
-  // return {
-  //   __esModule: true,
-  //   ...originalModule,
-  //   // default: jest.fn(() => 'mocked default export example'),
-  //   // Named export mocks
-  //   arweaveInstance: {
-  //     ...originalModule.arweaveInstance,
-  //     transactions: {
-  //       ...originalModule.arweaveInstance.transactions,
-  //       sign: jest.fn((tx, _) => tx),
-  //       post: jest.fn((_) => ({ status: 200, statusText: 'mocked ar tx post' }))
-
-  //     },
-  //     createTransaction: originalModule.arweaveInstance.createTransaction
-  //   }
-  // }
 })
 
 describe('ArFSApi with ArConnect', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+    // Reset to original implementation before each test
+  })
+
   const arfsApi = new ArFSApi({ wallet: 'use_wallet' })
 
   test('should have default apiUrl', () => {
@@ -80,6 +68,8 @@ describe('ArFSApi with JWK', () => {
   let arfsApi: ArFSApi
 
   beforeEach(async () => {
+    jest.clearAllMocks()
+
     arWallet = await arweaveInstance.wallets.generate()
 
     arfsApi = new ArFSApi({ wallet: arWallet })
@@ -102,9 +92,6 @@ describe('ArFSApi with JWK', () => {
   })
 
   test('should signAndSendAllTransactions', async () => {
-    arweaveInstance.transactions.post = jest.fn(
-      (tx: Transaction) => Promise.resolve({ id: tx.id, status: 200, statusText: 'success' }) as any
-    )
     const arTx = await arweaveInstance.createTransaction({ data: 'test' })
 
     const response = await arfsApi.signAndSendAllTransactions([arTx])
@@ -118,7 +105,7 @@ describe('ArFSApi with JWK', () => {
 
   test('should fail signAndSendAllTransactions', async () => {
     arweaveInstance.transactions.post = jest.fn(
-      (tx: Transaction) => Promise.resolve({ id: tx.id, status: 400, statusText: 'failed' }) as any
+      (tx: Transaction) => Promise.resolve({ id: tx.id, status: 400, statusText: 'failed mock' }) as any
     )
     const arTx = await arweaveInstance.createTransaction({ data: 'test' })
 

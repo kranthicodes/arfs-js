@@ -12,7 +12,7 @@ export interface IFileProps extends BaseModelProps {
   parentFolderId: string
   name: string // User defined folder name
   size: number
-  lastModifiedDate: ReturnType<typeof getUnixTime> // ms
+  lastModifiedDate: number // ms
   dataTxId: string
   dataContentType: string
   pinnedDataOwner?: string
@@ -31,7 +31,7 @@ export interface CreateFileProps {
 export type FileMetaData = {
   name: string // User defined file name
   size: number
-  lastModifiedDate: ReturnType<typeof getUnixTime> // ms
+  lastModifiedDate: number // ms
   dataTxId: string
   dataContentType: string
   pinnedDataOwner?: string
@@ -48,7 +48,7 @@ export class File extends BaseModel {
 
   name: string
   size: number
-  lastModifiedDate: ReturnType<typeof getUnixTime> // ms
+  lastModifiedDate: number // ms
   dataTxId: string
   dataContentType: string
   pinnedDataOwner?: string
@@ -90,7 +90,7 @@ export class File extends BaseModel {
     const contentType = 'application/json' // Default content type
     const fileId = uuidv4() // Generate a unique drive ID
     const unixTime = getUnixTime() // Current Unix time in seconds
-    const lastModifiedDate = getUnixTime() // Current Unix time in seconds
+    const lastModifiedDate = getUnixTime().valueOf() // Current Unix time in seconds
 
     return new File({
       arFS,
