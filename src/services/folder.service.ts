@@ -95,13 +95,19 @@ export class FolderService {
       if (entityType === 'folder') {
         const modelObject = toModelObject<IFolderProps>(tags)
 
-        return new Folder({ ...modelObject, name: data.name })
+        const instance = new Folder({ ...modelObject, name: data.name })
+        instance.setId(txId)
+
+        return instance
       }
 
       if (entityType === 'file') {
         const modelObject = toModelObject<IFileProps>(tags)
 
-        return new File({ ...modelObject, ...data })
+        const instance = new File({ ...modelObject, ...data })
+        instance.setId(txId)
+
+        return instance
       }
 
       return null

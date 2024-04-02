@@ -4,6 +4,7 @@ import { DataItem } from 'warp-arbundles'
 import { UnixTime } from '../utils/UnixTime'
 
 export abstract class BaseModel {
+  id?: string
   abstract arFS: string
   abstract contentType: string
   abstract driveId: string
@@ -13,6 +14,10 @@ export abstract class BaseModel {
   abstract toTransaction(): Promise<Transaction>
   abstract toDataItem(signer: any): Promise<DataItem>
   abstract toArweaveTags(): Tag[]
+
+  setId(id: string) {
+    this.id = id
+  }
 }
 
 export interface BaseModelProps {

@@ -24,6 +24,8 @@ export class DriveService {
       throw new Error('Failed to create a new drive.')
     }
 
+    drive.setId(response.successTxIds[0])
+
     return drive
   }
 
@@ -60,7 +62,10 @@ export class DriveService {
 
       const modelObject = toModelObject<DriveOptions>(tags)
 
-      return new Drive({ ...modelObject, name: data.name, rootFolderId: data.rootFolderId })
+      const instance = new Drive({ ...modelObject, name: data.name, rootFolderId: data.rootFolderId })
+      instance.setId(txId)
+
+      return instance
     } catch (error) {
       throw new Error('Failed to prepare drive instance.')
     }

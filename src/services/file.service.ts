@@ -1,7 +1,7 @@
 import { Tag } from 'arweave/web/lib/transaction'
 
 import { ArFSApi } from '../api'
-import { File, FileMetaData, Folder, FolderMetaData, IFileProps, IFolderProps } from '../models'
+import { File, FileMetaData, Folder, FolderMetaData, IFileProps } from '../models'
 import { arweaveInstance } from '../utils/arweaveInstance'
 import { toModelObject } from '../utils/arweaveTagsUtils'
 import { getEntityTypeFromTags } from '../utils/getEntityTypeFromTags'
@@ -93,16 +93,13 @@ export class FileService {
 
       if (!entityType) throw 'Failed to find entity.'
 
-      if (entityType === 'folder') {
-        const modelObject = toModelObject<IFolderProps>(tags)
-
-        return new Folder({ ...modelObject, name: data.name })
-      }
-
       if (entityType === 'file') {
         const modelObject = toModelObject<IFileProps>(tags)
 
-        return new File({ ...modelObject, ...data })
+        const instance = new File({ ...modelObject, ...data })
+        instance.setId(txId)
+
+        return instance
       }
 
       return null

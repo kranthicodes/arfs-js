@@ -129,4 +129,17 @@ export class File extends BaseModel {
   toArweaveTags() {
     return toArweaveTags(this) as Tag[]
   }
+
+  getMetaData() {
+    const { name, size, lastModifiedDate, dataContentType, dataTxId, pinnedDataOwner } = this
+
+    return {
+      name,
+      size,
+      lastModifiedDate,
+      dataContentType,
+      dataTxId,
+      pinnedDataOwner
+    }
+  }
 }

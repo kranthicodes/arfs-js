@@ -79,5 +79,14 @@ export class Drive extends BaseModel {
     return toArweaveTags(this) as Tag[]
   }
 
+  getMetaData() {
+    const { name, rootFolderId } = this
+
+    return {
+      name,
+      rootFolderId
+    }
+  }
+
   // Additional methods for drive management
 }

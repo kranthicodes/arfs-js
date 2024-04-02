@@ -84,4 +84,12 @@ export class Folder extends BaseModel {
   toArweaveTags() {
     return toArweaveTags(this) as Tag[]
   }
+
+  getMetaData() {
+    const { name } = this
+
+    return {
+      name
+    }
+  }
 }
