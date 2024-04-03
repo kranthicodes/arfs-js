@@ -1,10 +1,19 @@
 import * as React from 'react'
 import { getArFSClient } from '../../utils/getArFSClient'
+import useWallet from '../wallet-provider/useWallet'
 
 const ArFSContext = React.createContext()
 
 export function ArFSProvider({ children }) {
-  const arfsClient = getArFSClient()
+  const [arfsClient, setArfsClient] = React.useState({})
+  const { connected } = useWallet()
+
+  React.useEffect(() => {
+    if(connected){
+      const client = getArFSClient()
+      setArfsClient(client)
+    }
+  }, [connected])
 
   return <ArFSContext.Provider value={{ arfsClient }}>{children}</ArFSContext.Provider>
 }
