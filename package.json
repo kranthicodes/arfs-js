@@ -40,6 +40,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.3",
     "eslint-plugin-simple-import-sort": "^10.0.0",
+    "fake-indexeddb": "^5.0.2",
     "jest": "^29.7.0",
     "jsdom": "^24.0.0",
     "prettier": "^3.0.1",
@@ -49,8 +50,12 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
+    "@isomorphic-git/idb-keyval": "^3.3.2",
+    "@isomorphic-git/lightning-fs": "^4.6.0",
     "ar-gql": "^1.2.9",
     "arweave": "^1.14.4",
+    "isomorphic-textencoder": "^1.0.1",
+    "just-debounce-it": "^3.2.0",
     "uuid": "^9.0.0",
     "warp-arbundles": "^1.0.4",
     "warp-contracts-plugin-signature": "^1.0.20"

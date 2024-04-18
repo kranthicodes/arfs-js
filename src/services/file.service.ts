@@ -20,7 +20,7 @@ export class FileService {
     if (file instanceof ArrayBuffer) {
       // handle self upload and set the dataTxId
       const timeStamp = getUnixTime().toString()
-      const dataTx = await this.#prepareFileTransaction(file, rest.dataContentType, timeStamp)
+      const dataTx = await this.prepareFileTransaction(file, rest.dataContentType, timeStamp)
       const { failedTxIndex: failedDataTxIndex, successTxIds: successDataTxIds } =
         await this.api.signAndSendAllTransactions([dataTx])
 
@@ -108,7 +108,7 @@ export class FileService {
     }
   }
 
-  async #prepareFileTransaction(file: ArrayBuffer, contentType: string, timestamp: string) {
+  async prepareFileTransaction(file: ArrayBuffer, contentType: string, timestamp: string) {
     const transaction = await arweaveInstance.createTransaction({
       data: file
     })
