@@ -1,4 +1,4 @@
-import Arweave from 'arweave/web'
+import Arweave from 'arweave'
 
 export const arweaveInstance = Arweave.init({
   host: 'arweave.net',
