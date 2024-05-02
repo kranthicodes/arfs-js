@@ -14,3 +14,4 @@ export interface EntityMap {
 }
 
 export type Entity = File | Folder | Drive
+export { Drive, File, Folder }

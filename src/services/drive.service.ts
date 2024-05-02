@@ -55,6 +55,35 @@ export class DriveService {
     return response
   }
 
+  async get(driveId: string) {
+    await this.api.ready
+
+    if (!this.api.ready || !this.api.queryEngine) {
+      return null
+    }
+
+    let response: Drive | null = null
+
+    try {
+      const entitiesGql = await this.api.queryEngine.query('GET_USER_DRIVE_BY_ID', { driveId })
+
+      if (!entitiesGql.length) {
+        return null
+      }
+
+      const driveInstance = await this.#transactionToDriveInstance(
+        entitiesGql[0].node.id,
+        entitiesGql[0].node.tags as Tag[]
+      ) // most recent folder update
+
+      response = driveInstance as Drive
+    } catch (error) {
+      throw new Error('Failed to get folder.')
+    }
+
+    return response
+  }
+
   async #transactionToDriveInstance(txId: string, tags: Tag[]): Promise<Drive> {
     try {
       const txRes = await fetch(`https://arweave.net/${txId}`)
