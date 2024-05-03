@@ -32,8 +32,16 @@ export class BiFrost {
       const instance = this.driveState[path]
 
       if (instance.entityType === 'folder') {
-        //@ts-expect-error types
-        await this.fs.promises.mkdir(path, { writeToArFS: false })
+        try {
+          //@ts-expect-error types
+          await this.fs.promises.mkdir(path, { writeToArFS: false })
+        } catch (error: any) {
+          if (error.code === 'EEXIST') {
+            // ignore
+          } else {
+            throw new Error(error)
+          }
+        }
       } else if (instance.entityType === 'file') {
         //@ts-expect-error types
         await this.fs.promises.writeFile(path, null, { writeToArFS: false, dataTxId: instance.dataTxId })
