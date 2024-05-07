@@ -12,10 +12,10 @@ export class FolderService {
     this.api = api
   }
 
-  async create(name: string, { parentFolderId, driveId }: CreateFolderOptions) {
+  async create(name: string, { parentFolderId, driveId, tags = [] }: CreateFolderOptions) {
     const folder = Folder.create({ name, driveId: driveId, parentFolderId })
 
-    const folderDataItem = await folder.toTransaction()
+    const folderDataItem = await folder.toTransaction(tags)
 
     const response = await this.api.signAndSendAllTransactions([folderDataItem])
 
@@ -120,4 +120,5 @@ export class FolderService {
 export type CreateFolderOptions = {
   parentFolderId: string
   driveId: string
+  tags: Tag[]
 }

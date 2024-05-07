@@ -10,13 +10,13 @@ export class DriveService {
     this.api = api
   }
 
-  async create(name: string) {
+  async create(name: string, tags: Tag[] = []) {
     const drive = Drive.create(name)
     const rootFolder = Folder.create({ name, driveId: drive.driveId })
     drive.rootFolderId = rootFolder.folderId
 
-    const driveDataItem = await drive.toTransaction()
-    const rootFolderDataItem = await rootFolder.toTransaction()
+    const driveDataItem = await drive.toTransaction(tags)
+    const rootFolderDataItem = await rootFolder.toTransaction(tags)
 
     const response = await this.api.signAndSendAllTransactions([driveDataItem, rootFolderDataItem])
 

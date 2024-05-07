@@ -13,14 +13,14 @@ export class FileService {
     this.api = api
   }
 
-  async create({ file, ...rest }: CreateFileOptions) {
+  async create({ file, tags: customTags = [], ...rest }: CreateFileOptions) {
     let dataTxId = ''
     let pinnedDataOwner
 
     if (file instanceof ArrayBuffer) {
       // handle self upload and set the dataTxId
       const timeStamp = getUnixTime().toString()
-      const dataTx = await this.prepareFileTransaction(file, rest.dataContentType, timeStamp)
+      const dataTx = await this.prepareFileTransaction(file, rest.dataContentType, timeStamp, customTags)
       const { failedTxIndex: failedDataTxIndex, successTxIds: successDataTxIds } =
         await this.api.signAndSendAllTransactions([dataTx])
 
@@ -44,7 +44,7 @@ export class FileService {
 
     const fileInstance = File.create({ ...rest, dataTxId, pinnedDataOwner })
 
-    const fileTransaction = await fileInstance.toTransaction()
+    const fileTransaction = await fileInstance.toTransaction(customTags)
 
     const response = await this.api.signAndSendAllTransactions([fileTransaction])
 
@@ -108,13 +108,15 @@ export class FileService {
     }
   }
 
-  async prepareFileTransaction(file: ArrayBuffer, contentType: string, timestamp: string) {
+  async prepareFileTransaction(file: ArrayBuffer, contentType: string, timestamp: string, customTags: Tag[] = []) {
     const transaction = await arweaveInstance.createTransaction({
       data: file
     })
 
     transaction.addTag('Unix-Time', timestamp)
     transaction.addTag('Content-Type', contentType)
+
+    for (const tag of customTags) transaction.addTag(tag.name, tag.value)
 
     return transaction
   }
@@ -127,6 +129,7 @@ export type CreateFileOptions = {
   size: number
   dataContentType: string
   file: ArrayBuffer | FileData
+  tags: Tag[]
 }
 
 export type FileData = {

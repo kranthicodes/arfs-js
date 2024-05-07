@@ -58,13 +58,14 @@ export class Drive extends BaseModel {
     })
   }
 
-  async toTransaction() {
+  async toTransaction(customTags: Tag[] = []) {
     const tags = this.toArweaveTags() as Tag[]
 
     const tx = await arweaveInstance.createTransaction({
       data: JSON.stringify({ name: this.name, rootFolderId: this.rootFolderId })
     })
     for (const tag of tags) tx.addTag(tag.name, tag.value)
+    for (const tag of customTags) tx.addTag(tag.name, tag.value)
 
     return tx
   }
