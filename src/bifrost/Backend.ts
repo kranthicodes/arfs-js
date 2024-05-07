@@ -1,3 +1,4 @@
+import { Tag } from 'arweave/web/lib/transaction'
 import { decode, encode } from 'isomorphic-textencoder'
 import debounce from 'just-debounce-it'
 
@@ -167,7 +168,8 @@ export class Backend {
         const dataTx = await this.arfs.file.prepareFileTransaction(
           fileDataArrayBuffer,
           currentFileInstance.dataContentType,
-          timeStamp.toString()
+          timeStamp.toString(),
+          this.arfs.appName ? ([{ name: 'App-Name', value: this.arfs.appName }] as Tag[]) : []
         )
         const { failedTxIndex: failedDataTxIndex, successTxIds: successDataTxIds } =
           await this.arfs.api.signAndSendAllTransactions([dataTx])
@@ -185,7 +187,9 @@ export class Backend {
         currentFileInstance.dataTxId = txid
         currentFileInstance.lastModifiedDate = timeStamp.valueOf()
 
-        const fileTransaction = await new File({ ...currentFileInstance }).toTransaction()
+        const fileTransaction = await new File({ ...currentFileInstance }).toTransaction(
+          this.arfs.appName ? ([{ name: 'App-Name', value: this.arfs.appName }] as Tag[]) : []
+        )
 
         const response = await this.arfs.api.signAndSendAllTransactions([fileTransaction])
 

@@ -9,18 +9,20 @@ import { getUnixTime } from '../utils/UnixTime'
 
 export class FileService {
   api: ArFSApi
-  constructor(api: ArFSApi) {
+  tags: Tag[] = []
+  constructor(api: ArFSApi, tags: Tag[] = []) {
     this.api = api
+    this.tags = tags
   }
 
-  async create({ file, tags: customTags = [], ...rest }: CreateFileOptions) {
+  async create({ file, ...rest }: CreateFileOptions) {
     let dataTxId = ''
     let pinnedDataOwner
 
     if (file instanceof ArrayBuffer) {
       // handle self upload and set the dataTxId
       const timeStamp = getUnixTime().toString()
-      const dataTx = await this.prepareFileTransaction(file, rest.dataContentType, timeStamp, customTags)
+      const dataTx = await this.prepareFileTransaction(file, rest.dataContentType, timeStamp, this.tags)
       const { failedTxIndex: failedDataTxIndex, successTxIds: successDataTxIds } =
         await this.api.signAndSendAllTransactions([dataTx])
 
@@ -44,7 +46,7 @@ export class FileService {
 
     const fileInstance = File.create({ ...rest, dataTxId, pinnedDataOwner })
 
-    const fileTransaction = await fileInstance.toTransaction(customTags)
+    const fileTransaction = await fileInstance.toTransaction(this.tags)
 
     const response = await this.api.signAndSendAllTransactions([fileTransaction])
 
@@ -129,7 +131,6 @@ export type CreateFileOptions = {
   size: number
   dataContentType: string
   file: ArrayBuffer | FileData
-  tags: Tag[]
 }
 
 export type FileData = {

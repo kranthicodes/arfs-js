@@ -8,14 +8,16 @@ import { getUniqueEntities } from '../utils/getUniqueEntities'
 
 export class FolderService {
   api: ArFSApi
-  constructor(api: ArFSApi) {
+  tags: Tag[] = []
+  constructor(api: ArFSApi, tags: Tag[] = []) {
     this.api = api
+    this.tags = tags
   }
 
-  async create(name: string, { parentFolderId, driveId, tags = [] }: CreateFolderOptions) {
+  async create(name: string, { parentFolderId, driveId}: CreateFolderOptions) {
     const folder = Folder.create({ name, driveId: driveId, parentFolderId })
 
-    const folderDataItem = await folder.toTransaction(tags)
+    const folderDataItem = await folder.toTransaction(this.tags)
 
     const response = await this.api.signAndSendAllTransactions([folderDataItem])
 
@@ -120,5 +122,4 @@ export class FolderService {
 export type CreateFolderOptions = {
   parentFolderId: string
   driveId: string
-  tags: Tag[]
 }

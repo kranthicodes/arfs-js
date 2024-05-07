@@ -6,17 +6,19 @@ import { toModelObject } from '../utils/arweaveTagsUtils'
 
 export class DriveService {
   api: ArFSApi
-  constructor(api: ArFSApi) {
+  tags: Tag[] = []
+  constructor(api: ArFSApi, tags: Tag[] = []) {
     this.api = api
+    this.tags = tags
   }
 
-  async create(name: string, tags: Tag[] = []) {
+  async create(name: string) {
     const drive = Drive.create(name)
     const rootFolder = Folder.create({ name, driveId: drive.driveId })
     drive.rootFolderId = rootFolder.folderId
 
-    const driveDataItem = await drive.toTransaction(tags)
-    const rootFolderDataItem = await rootFolder.toTransaction(tags)
+    const driveDataItem = await drive.toTransaction(this.tags)
+    const rootFolderDataItem = await rootFolder.toTransaction(this.tags)
 
     const response = await this.api.signAndSendAllTransactions([driveDataItem, rootFolderDataItem])
 
