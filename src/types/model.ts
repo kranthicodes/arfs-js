@@ -14,4 +14,5 @@ export interface EntityMap {
 }
 
 export type Entity = File | Folder | Drive
+export type EntityVisibility = 'public' | 'private'
 export { Drive, File, Folder }

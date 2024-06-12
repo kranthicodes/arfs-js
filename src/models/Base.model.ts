@@ -10,6 +10,8 @@ export abstract class BaseModel {
   abstract driveId: string
   abstract unixTime: UnixTime
   abstract entityType?: 'drive' | 'folder' | 'file' | 'snapshot'
+  abstract cipher?: string
+  abstract cipherIv?: string
 
   abstract toTransaction(): Promise<Transaction>
   abstract toDataItem(signer: any): Promise<DataItem>
@@ -26,6 +28,8 @@ export interface BaseModelProps {
   driveId: string
   unixTime: UnixTime
   entityType?: EntityType
+  cipher?: string
+  cipherIv?: string
 }
 
 export type EntityType = 'drive' | 'folder' | 'file' | 'snapshot'

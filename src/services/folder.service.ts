@@ -1,23 +1,39 @@
 import { Tag } from 'arweave/web/lib/transaction'
 
 import { ArFSApi } from '../api'
+import { Crypto } from '../crypto'
 import { File, FileMetaData, Folder, FolderMetaData, IFileProps, IFolderProps } from '../models'
+import { EntityVisibility } from '../types'
 import { toModelObject } from '../utils/arweaveTagsUtils'
 import { getEntityTypeFromTags } from '../utils/getEntityTypeFromTags'
 import { getUniqueEntities } from '../utils/getUniqueEntities'
 
 export class FolderService {
   api: ArFSApi
+  crypto: Crypto
   tags: Tag[] = []
-  constructor(api: ArFSApi, tags: Tag[] = []) {
+
+  constructor(api: ArFSApi, tags: Tag[] = [], crypto: Crypto) {
     this.api = api
     this.tags = tags
+    this.crypto = crypto
   }
 
-  async create(name: string, { parentFolderId, driveId}: CreateFolderOptions) {
-    const folder = Folder.create({ name, driveId: driveId, parentFolderId })
+  async create(name: string, { parentFolderId, driveId, visibility = 'public' }: CreateFolderOptions) {
+    const folder = Folder.create({ name, driveId: driveId, parentFolderId, visibility })
+    let folderMetaData: string | ArrayBuffer = JSON.stringify(folder.getMetaData())
 
-    const folderDataItem = await folder.toTransaction(this.tags)
+    if (visibility === 'private') {
+      const { aesKey } = await this.crypto.getDriveKey(driveId)
+
+      const encryptedFolderMetaData = await this.crypto.encryptEntity(Buffer.from(folderMetaData), aesKey)
+      folderMetaData = encryptedFolderMetaData.data
+
+      folder.cipher = encryptedFolderMetaData.cipher
+      folder.cipherIv = encryptedFolderMetaData.cipherIV
+    }
+
+    const folderDataItem = await folder.toTransaction(this.tags, folderMetaData)
 
     const response = await this.api.signAndSendAllTransactions([folderDataItem])
 
@@ -25,6 +41,7 @@ export class FolderService {
       throw new Error('Failed to create a new folder.')
     }
 
+    folder.setId(response.successTxIds[0])
     return folder
   }
 
@@ -122,4 +139,5 @@ export class FolderService {
 export type CreateFolderOptions = {
   parentFolderId: string
   driveId: string
+  visibility?: EntityVisibility
 }

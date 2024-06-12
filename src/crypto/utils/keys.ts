@@ -5,7 +5,7 @@ import { EntityKey } from '../EntityKey'
 import { getDeriveKey } from './getDeriveKey'
 import { getPrivateHash } from './getPrivateHash'
 
-export async function deriveDriveKey(wallet: Wallet, driveId: string): Promise<CryptoKey> {
+export async function deriveDriveKey(wallet: Wallet, driveId: string) {
   const entityIdBytes: Buffer = Buffer.from(parse(driveId) as Uint8Array) // The UUID of the driveId is the SALT used for the drive key
   const entityBuffer: Buffer = Buffer.from(new TextEncoder().encode('drive'))
 
@@ -27,7 +27,7 @@ export async function deriveDriveKey(wallet: Wallet, driveId: string): Promise<C
     ['encrypt', 'decrypt']
   )
 
-  return cryptoKey
+  return { baseEntityKey, aesKey: cryptoKey }
 }
 
 export async function deriveFileKey(driveEntityKey: EntityKey, fileId: string): Promise<CryptoKey> {

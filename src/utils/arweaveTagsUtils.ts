@@ -28,6 +28,11 @@ export function toArweaveTags(model: Drive | Folder | File): { name: string; val
     tags.push({ name: 'Parent-Folder-Id', value: model.parentFolderId })
   }
 
+  if (model.cipher && model.cipherIv) {
+    tags.push({ name: 'Cipher', value: model.cipher })
+    tags.push({ name: 'Cipher-IV', value: model.cipherIv })
+  }
+
   return tags
 }
 
