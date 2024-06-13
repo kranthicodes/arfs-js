@@ -112,10 +112,15 @@ export class FolderService {
       if (modelObject.cipher && modelObject.cipherIv) {
         const dataArrayBuffer = await txRes.arrayBuffer()
 
-        const { aesKey } = await this.crypto.getDriveKey(modelObject.driveId)
+        const { aesKey, baseEntityKey } = await this.crypto.getDriveKey(modelObject.driveId)
+        let key = aesKey
+
+        if (modelObject.entityType === 'file') {
+          key = await this.crypto.getFileKey(baseEntityKey, (modelObject as IFileProps).fileId)
+        }
 
         const decryptedEntityDataBuffer = await this.crypto.decryptEntity(
-          aesKey,
+          key,
           modelObject.cipherIv!,
           Buffer.from(dataArrayBuffer)
         )

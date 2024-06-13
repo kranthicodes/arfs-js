@@ -24,7 +24,7 @@ export class FileService {
     const dataTxId = ''
     let pinnedDataOwner
 
-    const fileInstance = File.create({ ...rest, dataTxId, pinnedDataOwner })
+    const fileInstance = File.create({ ...rest, dataTxId, pinnedDataOwner, visibility })
 
     if (file instanceof ArrayBuffer) {
       const localTags: Tag[] = []
@@ -122,6 +122,34 @@ export class FileService {
     return response
   }
 
+  async decryptFile(fileEntity: File) {
+    if (!fileEntity.dataTxId) throw new Error('Invalid File Entity. dataTxId missing.')
+    if (!fileEntity.cipher || !fileEntity.cipherIv) {
+      throw new Error('File entity is not encrypted.')
+    }
+
+    try {
+      const txDataRes = await fetch(`https://arweave.net/${fileEntity.dataTxId}`)
+      const dataArrayBuffer = await txDataRes.arrayBuffer()
+
+      await this.api.ready
+
+      const cipherIV = await this.api.queryEngine?.argql.fetchTxTag(fileEntity.dataTxId, 'Cipher-IV')
+
+      if (!cipherIV) throw new Error('CipherIV Missing. Failed to decrypt.')
+
+      const { baseEntityKey } = await this.crypto.getDriveKey(fileEntity.driveId)
+      const fileKey = await this.crypto.getFileKey(baseEntityKey, fileEntity.fileId)
+
+      const decryptedFileBuffer = await this.crypto.decryptEntity(fileKey, cipherIV, Buffer.from(dataArrayBuffer))
+
+      return new Blob([decryptedFileBuffer])
+    } catch (error) {
+      console.error(error)
+      throw new Error('Failed to decrypt file.')
+    }
+  }
+
   async #transactionToEntityInstance(txId: string, tags: Tag[]): Promise<Folder | File | null> {
     try {
       const txRes = await fetch(`https://arweave.net/${txId}`)
@@ -132,10 +160,11 @@ export class FileService {
       if (modelObject.cipher && modelObject.cipherIv) {
         const dataArrayBuffer = await txRes.arrayBuffer()
 
-        const { aesKey } = await this.crypto.getDriveKey(modelObject.driveId)
+        const { baseEntityKey } = await this.crypto.getDriveKey(modelObject.driveId)
+        const fileKey = await this.crypto.getFileKey(baseEntityKey, modelObject.fileId)
 
         const decryptedEntityDataBuffer = await this.crypto.decryptEntity(
-          aesKey,
+          fileKey,
           modelObject.cipherIv!,
           Buffer.from(dataArrayBuffer)
         )

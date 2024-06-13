@@ -118,7 +118,8 @@ const createExplorerSlice = (set, get) => ({
       try {
         const folder = await arfsClient.folder.create(name, {
           driveId: selectedDrive.driveId,
-          parentFolderId: selectedFolder.folderId
+          parentFolderId: selectedFolder.folderId,
+          visibility: selectedDrive.drivePrivacy === 'private' ? 'private' : 'public'
         })
 
         set((state) => {
@@ -155,7 +156,8 @@ const createExplorerSlice = (set, get) => ({
           dataContentType: file.type,
           driveId: selectedDrive.driveId,
           parentFolderId: selectedFolder.folderId,
-          file: fileBuffer
+          file: fileBuffer,
+          visibility: selectedDrive.drivePrivacy === 'private' ? 'private' : 'public'
         })
 
         set((state) => {
