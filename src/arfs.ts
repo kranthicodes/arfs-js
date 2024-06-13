@@ -22,7 +22,7 @@ export class ArFS {
       this.appName = appName
     }
 
-    this.api = new ArFSApi({ gateway, wallet })
+    this.api = new ArFSApi({ gateway, wallet, appName: this.appName })
     this.crypto = new Crypto(this.api)
 
     this.drive = new DriveService(this.api, this.baseTags, this.crypto)

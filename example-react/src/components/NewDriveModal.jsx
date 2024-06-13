@@ -7,13 +7,14 @@ import BarLoader from './BarLoader'
 const NewDriveModal = ({ isOpen, setIsOpen }) => {
   const [isSubmitting, setIsSubmitting] = React.useState(false)
   const [name, setName] = React.useState('')
+  const [isPrivate, setIsPrivate] = React.useState(false)
   const [createDrive] = useGlobalStore((state) => [state.explorerActions.createDrive])
 
   async function handleSubmit() {
     if (!name) return
 
     setIsSubmitting(true)
-    await createDrive(name)
+    await createDrive(name, isPrivate)
     setIsSubmitting(false)
 
     setIsOpen(false)
@@ -50,6 +51,10 @@ const NewDriveModal = ({ isOpen, setIsOpen }) => {
                   placeholder="Your drive name..."
                   className={`bg-indigo-700 transition-colors duration-[750ms] placeholder-white/70 p-2 rounded-md w-full focus:outline-0`}
                 />
+              </div>
+              <div className="flex py-1 gap-2">
+                <input checked={isPrivate} onChange={(evt) => setIsPrivate(evt.target.checked)} type="checkbox" />
+                <span className='font-medium'>Private</span>
               </div>
               <div className="flex gap-2 mt-4">
                 <button

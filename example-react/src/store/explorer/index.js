@@ -76,7 +76,7 @@ const createExplorerSlice = (set, get) => ({
         state.explorerState.isSyncing = false
       })
     },
-    createDrive: async (name) => {
+    createDrive: async (name, isPrivate) => {
       const userAddress = get().authState.address
 
       if (!userAddress) {
@@ -87,7 +87,7 @@ const createExplorerSlice = (set, get) => ({
       const arfsClient = getArFSClient()
 
       try {
-        const drive = await arfsClient.drive.create(name)
+        const drive = await arfsClient.drive.create(name, { visibility: isPrivate ? 'private' : 'public' })
 
         set((state) => {
           state.explorerState.drives.push(drive)
