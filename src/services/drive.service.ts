@@ -114,10 +114,27 @@ export class DriveService {
 
   async #transactionToDriveInstance(txId: string, tags: Tag[]): Promise<Drive> {
     try {
-      const txRes = await fetch(`https://arweave.net/${txId}`)
-      const data = (await txRes.json()) as DriveMetaData
-
       const modelObject = toModelObject<DriveOptions>(tags)
+
+      const txRes = await fetch(`https://arweave.net/${txId}`)
+
+      let data: DriveMetaData | null = null
+
+      if (modelObject.drivePrivacy && modelObject.drivePrivacy === 'private') {
+        const driveArrayBuffer = await txRes.arrayBuffer()
+
+        const { aesKey } = await this.crypto.getDriveKey(modelObject.driveId)
+
+        const decryptedDriveBuffer = await this.crypto.decryptEntity(
+          aesKey,
+          modelObject.cipherIv!,
+          Buffer.from(driveArrayBuffer)
+        )
+
+        data = JSON.parse(Buffer.from(decryptedDriveBuffer).toString()) as DriveMetaData
+      } else {
+        data = (await txRes.json()) as DriveMetaData
+      }
 
       const instance = new Drive({ ...modelObject, name: data.name, rootFolderId: data.rootFolderId })
       instance.setId(txId)

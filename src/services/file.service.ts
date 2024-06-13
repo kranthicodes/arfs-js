@@ -125,15 +125,31 @@ export class FileService {
   async #transactionToEntityInstance(txId: string, tags: Tag[]): Promise<Folder | File | null> {
     try {
       const txRes = await fetch(`https://arweave.net/${txId}`)
-      const data = (await txRes.json()) as FolderMetaData | FileMetaData
+      const modelObject = toModelObject<IFileProps>(tags)
+
+      let data: FolderMetaData | FileMetaData | null = null
+
+      if (modelObject.cipher && modelObject.cipherIv) {
+        const dataArrayBuffer = await txRes.arrayBuffer()
+
+        const { aesKey } = await this.crypto.getDriveKey(modelObject.driveId)
+
+        const decryptedEntityDataBuffer = await this.crypto.decryptEntity(
+          aesKey,
+          modelObject.cipherIv!,
+          Buffer.from(dataArrayBuffer)
+        )
+
+        data = JSON.parse(Buffer.from(decryptedEntityDataBuffer).toString()) as FolderMetaData | FileMetaData
+      } else {
+        data = (await txRes.json()) as FolderMetaData | FileMetaData
+      }
 
       const entityType = getEntityTypeFromTags(tags)
 
       if (!entityType) throw 'Failed to find entity.'
 
       if (entityType === 'file') {
-        const modelObject = toModelObject<IFileProps>(tags)
-
         const instance = new File({ ...modelObject, ...data })
         instance.setId(txId)
 
