@@ -5,16 +5,20 @@ import { TypeIndex, typeIndex } from './types'
 export type QueryBuilderOptions = {
   apiUrl: string
   address: string
+  appName?: string | null
 }
 
 export class QueryBuilder {
   public apiUrl: string
   public address: string
   public argql = arGql()
+  public appName: string | null = null
 
-  constructor({ apiUrl, address }: QueryBuilderOptions) {
+  constructor({ apiUrl, address, appName }: QueryBuilderOptions) {
     this.apiUrl = apiUrl
     this.address = address
+
+    if (appName) this.appName = appName
   }
 
   async query(type: TypeIndex, options: QueryOptions = {}) {
@@ -22,6 +26,10 @@ export class QueryBuilder {
 
     if (!options.address) {
       options.address = this.address
+    }
+
+    if (!options.appName) {
+      options.appName = this.appName || ''
     }
 
     return this.argql.all(queryString, options)

@@ -2,6 +2,7 @@ import { Tag } from 'arweave/web/lib/transaction'
 import { v4 as uuidv4 } from 'uuid'
 import { createData } from 'warp-arbundles'
 
+import { EntityVisibility } from '../types'
 import { arweaveInstance } from '../utils/arweaveInstance'
 import { toArweaveTags } from '../utils/arweaveTagsUtils'
 import { getUnixTime } from '../utils/UnixTime'
@@ -16,6 +17,8 @@ export interface IFileProps extends BaseModelProps {
   dataTxId: string
   dataContentType: string
   pinnedDataOwner?: string
+  cipher?: string | undefined
+  cipherIv?: string | undefined
 }
 
 export interface CreateFileProps {
@@ -26,6 +29,7 @@ export interface CreateFileProps {
   dataTxId: string
   dataContentType: string
   pinnedDataOwner?: string
+  visibility?: EntityVisibility
 }
 
 export type FileMetaData = {
@@ -45,6 +49,8 @@ export class File extends BaseModel {
   parentFolderId: string
   entityType: 'file'
   unixTime: ReturnType<typeof getUnixTime>
+  cipher?: string | undefined
+  cipherIv?: string | undefined
 
   name: string
   size: number
@@ -65,7 +71,9 @@ export class File extends BaseModel {
     lastModifiedDate,
     dataTxId,
     dataContentType,
-    pinnedDataOwner
+    pinnedDataOwner,
+    cipher,
+    cipherIv
   }: IFileProps) {
     super()
 
@@ -76,6 +84,8 @@ export class File extends BaseModel {
     this.parentFolderId = parentFolderId
     this.unixTime = unixTime
     this.entityType = 'file'
+    this.cipher = cipher
+    this.cipherIv = cipherIv
 
     this.name = name
     this.size = size
@@ -87,7 +97,7 @@ export class File extends BaseModel {
 
   static create(options: CreateFileProps): File {
     const arFS = '0.13' // Assuming a fixed version for this example
-    const contentType = 'application/json' // Default content type
+    const contentType = options?.visibility === 'private' ? 'application/octet-stream' : 'application/json' // Default content type
     const fileId = uuidv4() // Generate a unique drive ID
     const unixTime = getUnixTime() // Current Unix time in seconds
     const lastModifiedDate = getUnixTime().valueOf() // Current Unix time in seconds
@@ -102,18 +112,20 @@ export class File extends BaseModel {
     })
   }
 
-  async toTransaction(customTags: Tag[] = []) {
+  async toTransaction(customTags: Tag[] = [], data?: string | ArrayBuffer | Uint8Array) {
     const tags = this.toArweaveTags() as Tag[]
 
     const tx = await arweaveInstance.createTransaction({
-      data: JSON.stringify({
-        name: this.name,
-        size: this.size,
-        lastModifiedDate: this.lastModifiedDate,
-        dataTxId: this.dataTxId,
-        dataContentType: this.dataContentType,
-        pinnedDataOwner: this.pinnedDataOwner
-      })
+      data:
+        data ||
+        JSON.stringify({
+          name: this.name,
+          size: this.size,
+          lastModifiedDate: this.lastModifiedDate,
+          dataTxId: this.dataTxId,
+          dataContentType: this.dataContentType,
+          pinnedDataOwner: this.pinnedDataOwner
+        })
     })
     for (const tag of tags) tx.addTag(tag.name, tag.value)
     for (const tag of customTags) tx.addTag(tag.name, tag.value)

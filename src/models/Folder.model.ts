@@ -2,6 +2,7 @@ import { Tag } from 'arweave/web/lib/transaction'
 import { v4 as uuidv4 } from 'uuid'
 import { createData } from 'warp-arbundles'
 
+import { EntityVisibility } from '../types'
 import { arweaveInstance } from '../utils/arweaveInstance'
 import { toArweaveTags } from '../utils/arweaveTagsUtils'
 import { getUnixTime } from '../utils/UnixTime'
@@ -17,6 +18,7 @@ export interface CreateFolderProps {
   name: string // User defined folder name
   driveId: string // UUID of the drive
   parentFolderId?: string
+  visibility?: EntityVisibility
 }
 
 export type FolderMetaData = {
@@ -31,9 +33,21 @@ export class Folder extends BaseModel {
   parentFolderId?: string
   entityType: 'folder'
   unixTime: ReturnType<typeof getUnixTime>
+  cipher?: string | undefined
+  cipherIv?: string | undefined
   name: string
 
-  constructor({ arFS, contentType, driveId, folderId, parentFolderId, unixTime, name }: IFolderProps) {
+  constructor({
+    arFS,
+    contentType,
+    driveId,
+    folderId,
+    parentFolderId,
+    unixTime,
+    name,
+    cipher,
+    cipherIv
+  }: IFolderProps) {
     super()
 
     this.arFS = arFS
@@ -43,13 +57,15 @@ export class Folder extends BaseModel {
     this.parentFolderId = parentFolderId
     this.unixTime = unixTime
     this.entityType = 'folder'
+    this.cipher = cipher
+    this.cipherIv = cipherIv
 
     this.name = name
   }
 
-  static create({ name, driveId, parentFolderId }: CreateFolderProps): Folder {
+  static create({ name, driveId, parentFolderId, visibility = 'public' }: CreateFolderProps): Folder {
     const arFS = '0.13' // Assuming a fixed version for this example
-    const contentType = 'application/json' // Default content type
+    const contentType = visibility === 'private' ? 'application/octet-stream' : 'application/json' // Default content type
     const folderId = uuidv4() // Generate a unique drive ID
     const unixTime = getUnixTime() // Current Unix time in seconds
 
@@ -64,11 +80,11 @@ export class Folder extends BaseModel {
     })
   }
 
-  async toTransaction(customTags: Tag[] = []) {
+  async toTransaction(customTags: Tag[] = [], data?: string | ArrayBuffer | Uint8Array) {
     const tags = this.toArweaveTags() as Tag[]
 
     const tx = await arweaveInstance.createTransaction({
-      data: JSON.stringify({ name: this.name })
+      data: data || JSON.stringify({ name: this.name })
     })
     for (const tag of tags) tx.addTag(tag.name, tag.value)
     for (const tag of customTags) tx.addTag(tag.name, tag.value)

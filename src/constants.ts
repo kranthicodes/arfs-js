@@ -7,5 +7,7 @@ export const TAG_NAMES_TO_KEYS = {
   'Drive-Privacy': 'drivePrivacy',
   'Folder-Id': 'folderId',
   'File-Id': 'fileId',
-  'Parent-Folder-Id': 'parentFolderId'
+  'Parent-Folder-Id': 'parentFolderId',
+  'Cipher': 'cipher',
+  'Cipher-IV': 'cipherIv'
 }

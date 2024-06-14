@@ -4,7 +4,7 @@ import { InjectedArweaveSigner } from 'warp-contracts-plugin-signature'
 
 import { APIOptions, Wallet } from '../types/api'
 import { arweaveInstance } from '../utils/arweaveInstance'
-import {  arweaveUpload, turboUpload } from '../utils/uploaders'
+import { arweaveUpload, turboUpload } from '../utils/uploaders'
 import { apiConfig } from './config'
 import { QueryBuilder } from './query/queryBuilder'
 
@@ -15,13 +15,13 @@ export class ArFSApi {
   public queryEngine: QueryBuilder | null = null
   public ready: Promise<boolean>
 
-  constructor({ gateway, wallet }: APIOptions) {
+  constructor({ gateway, wallet, appName }: APIOptions) {
     const apiUrl = gateway ? gateway : apiConfig['default'].url
 
     this.apiUrl = apiUrl
     this.wallet = wallet
 
-    this.ready = this.#initialize(wallet, apiUrl)
+    this.ready = this.#initialize(wallet, apiUrl, appName)
   }
 
   async getSigner() {
@@ -74,10 +74,10 @@ export class ArFSApi {
     return { successTxIds: txIds, failedTxIndex }
   }
 
-  async #initialize(wallet: Wallet, apiUrl: string) {
+  async #initialize(wallet: Wallet, apiUrl: string, appName?: string | null) {
     try {
       const address = await arweaveInstance.wallets.getAddress(wallet)
-      const queryInstance = new QueryBuilder({ apiUrl, address })
+      const queryInstance = new QueryBuilder({ apiUrl, address, appName })
 
       this.address = address
       this.queryEngine = queryInstance
