@@ -1,5 +1,5 @@
 export const GET_ALL_ENTITIES_IN_DRIVE = `
-query($cursor: String $address: String! $driveId: String!) {
+query($cursor: String $driveId: String!) {
     transactions(        
       after: $cursor
       first: 100
@@ -7,7 +7,6 @@ query($cursor: String $address: String! $driveId: String!) {
         { name: "Drive-Id", values: [$driveId] }
         { name: "Entity-Type", values: ["folder", "file"] }
       ]
-      owners: [$address]
     ) {
       pageInfo {
         hasNextPage

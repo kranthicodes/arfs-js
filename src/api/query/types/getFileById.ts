@@ -1,5 +1,5 @@
 export const GET_FILE_BY_ID = `
-query($cursor: String $address: String! $driveId: String! $fileId: String!) {
+query($cursor: String $driveId: String! $fileId: String!) {
     transactions( 
       after: $cursor       
       first: 1
@@ -8,7 +8,6 @@ query($cursor: String $address: String! $driveId: String! $fileId: String!) {
         { name: "Drive-Id", values: [$driveId] }
         { name: "File-Id", values: [$fileId] }
       ]
-      owners: [$address]
     ) {
       pageInfo {
         hasNextPage

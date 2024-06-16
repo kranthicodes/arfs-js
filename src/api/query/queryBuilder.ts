@@ -24,7 +24,7 @@ export class QueryBuilder {
   async query(type: TypeIndex, options: QueryOptions = {}) {
     const queryString = typeIndex[type]
 
-    if (!options.address) {
+    if (!options.address && type === 'GET_ALL_USER_DRIVES') {
       options.address = this.address
     }
 

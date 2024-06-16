@@ -1,5 +1,5 @@
 export const GET_FOLDER_BY_ID = `
-query($cursor: String $address: String! $driveId: String! $folderId: String!) {
+query($cursor: String $driveId: String! $folderId: String!) {
     transactions( 
       after: $cursor       
       first: 1
@@ -8,7 +8,6 @@ query($cursor: String $address: String! $driveId: String! $folderId: String!) {
         { name: "Drive-Id", values: [$driveId] }
         { name: "Folder-Id", values: [$folderId] }
       ]
-      owners: [$address]
     ) {
       pageInfo {
         hasNextPage

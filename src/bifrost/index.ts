@@ -44,7 +44,7 @@ export class BiFrost {
         }
       } else if (instance.entityType === 'file') {
         //@ts-expect-error types
-        await this.fs.promises.writeFile(path, null, { writeToArFS: false, dataTxId: instance.dataTxId })
+        await this.fs.promises.writeFile(path, null, { writeToArFS: false, fileEntity: instance })
       }
     }
   }
