@@ -134,14 +134,19 @@ export class Backend {
     return data
   }
   async writeFile(filepath: string, data: Uint8Array | string | null = null, opts: EncodingOpts) {
-    const { mode, encoding = 'utf8', writeToArFS = true, dataTxId, dataContentType } = opts
+    const { mode, encoding = 'utf8', writeToArFS = true, dataTxId, dataContentType, fileEntity } = opts
 
-    if (!data && !writeToArFS && dataTxId) {
+    if (!data && !writeToArFS && fileEntity) {
       try {
-        const res = await fetch(`${this.arfs.api.apiUrl}/${dataTxId}`)
-        const dataArrBuf = await res.arrayBuffer()
+        if (this.selectedDrive.drivePrivacy === 'private' && fileEntity.cipher) {
+          const fileBlob = await this.arfs.file.decryptFile(fileEntity as File)
+          data = new Uint8Array(await fileBlob.arrayBuffer())
+        } else {
+          const res = await fetch(`${this.arfs.api.apiUrl}/${dataTxId}`)
+          const dataArrBuf = await res.arrayBuffer()
 
-        data = new Uint8Array(dataArrBuf)
+          data = new Uint8Array(dataArrBuf)
+        }
       } catch (error) {
         throw new Error('Failed to fetch file from arweave.')
       }
@@ -161,16 +166,30 @@ export class Backend {
       const driveState = (await this._idb.loadDriveState()) as EntityMap
       const currentFileInstance = driveState[filepath] as File
 
+      // update datatxid of current file instance
       if (currentFileInstance) {
-        //
-        const fileDataArrayBuffer = data.buffer.slice(data.byteOffset, data.byteLength + data.byteOffset)
+        const localTags: Tag[] = []
+        let fileDataArrayBuffer = data.buffer.slice(data.byteOffset, data.byteLength + data.byteOffset)
+
+        if (this.selectedDrive.drivePrivacy === 'private' && currentFileInstance.cipher) {
+          const { baseEntityKey } = await this.arfs.crypto.getDriveKey(this.selectedDrive.driveId)
+          const fileKey = await this.arfs.crypto.getFileKey(baseEntityKey, currentFileInstance.fileId)
+          const encryptedFile = await this.arfs.crypto.encryptEntity(Buffer.from(fileDataArrayBuffer), fileKey)
+
+          localTags.push({ name: 'Cipher', value: encryptedFile.cipher } as Tag)
+          localTags.push({ name: 'Cipher-IV', value: encryptedFile.cipherIV } as Tag)
+
+          fileDataArrayBuffer = encryptedFile.data
+        }
+
         const timeStamp = getUnixTime()
         const dataTx = await this.arfs.file.prepareFileTransaction(
           fileDataArrayBuffer,
           currentFileInstance.dataContentType,
           timeStamp.toString(),
-          this.arfs.appName ? ([{ name: 'App-Name', value: this.arfs.appName }] as Tag[]) : []
+          this.arfs.appName ? ([{ name: 'App-Name', value: this.arfs.appName }, ...localTags] as Tag[]) : localTags
         )
+
         const { failedTxIndex: failedDataTxIndex, successTxIds: successDataTxIds } =
           await this.arfs.api.signAndSendAllTransactions([dataTx])
 
@@ -223,7 +242,8 @@ export class Backend {
         driveId: this.selectedDrive.driveId,
         name: fileName!,
         parentFolderId,
-        size: data.byteLength
+        size: data.byteLength,
+        visibility: this.selectedDrive.drivePrivacy
       })
 
       // Update drive state
@@ -273,7 +293,8 @@ export class Backend {
 
       const newFolder = await this.arfs.folder.create(folderName!, {
         parentFolderId,
-        driveId: this.selectedDrive.driveId
+        driveId: this.selectedDrive.driveId,
+        visibility: this.selectedDrive.drivePrivacy
       })
 
       // Update drive state
