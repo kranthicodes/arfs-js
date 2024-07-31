@@ -4,5 +4,5 @@ import { EntityVisibility } from './model'
 
 export type CreateDriveOptions = {
   visibility?: EntityVisibility
-  tags: Tag[]
+  tags?: Tag[]
 }

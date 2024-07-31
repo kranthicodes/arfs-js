@@ -1,3 +1,5 @@
+import { Entity } from "./model"
+
 export interface IBackend {
   // highly recommended - usually necessary for apps to work
   readFile(filepath: string, opts: EncodingOpts): Promise<Uint8Array | string | null> // throws ENOENT
@@ -33,6 +35,7 @@ export type EncodingOpts = {
   writeToArFS?: boolean
   dataTxId?: string
   dataContentType?: string
+  fileEntity?: Entity
 }
 
 export type StatLike = {

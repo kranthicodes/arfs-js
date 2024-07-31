@@ -1,5 +1,5 @@
 export const GET_ALL_ENTITIES_IN_FOLDER = `
-query($cursor: String $address: String! $driveId: String! $folderId: String!) {
+query($cursor: String $driveId: String! $folderId: String!) {
     transactions(        
       after: $cursor
       first: 100
@@ -8,7 +8,6 @@ query($cursor: String $address: String! $driveId: String! $folderId: String!) {
         { name: "Parent-Folder-Id", values: [$folderId] }
         { name: "Entity-Type", values: ["folder", "file"] }
       ]
-      owners: [$address]
     ) {
       pageInfo {
         hasNextPage

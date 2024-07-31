@@ -1,5 +1,5 @@
 export const GET_USER_DRIVE_BY_ID = `
-query($cursor: String $address: String! $driveId: String!) {
+query($cursor: String $driveId: String!) {
     transactions( 
       after: $cursor       
       first: 1
@@ -7,7 +7,6 @@ query($cursor: String $address: String! $driveId: String!) {
         { name: "Entity-Type", values: "drive" }
         { name: "Drive-Id", values: [$driveId] }
       ]
-      owners: [$address]
     ) {
       pageInfo {
         hasNextPage
